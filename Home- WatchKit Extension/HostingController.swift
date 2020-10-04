@@ -9,16 +9,29 @@ import WatchKit
 import Foundation
 import SwiftUI
 
+class MockHome: Home {
+    var observer: HomeObserver?
+    
+    init() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.updateAccessories()
+        }
+    }
+    
+    func updateAccessories() {
+        observer?.didUpdateAccessories([
+            Accessory(name: "Dining Room", on: false, action: { }),
+            Accessory(name: "Living Room", on: false, action: { }),
+            Accessory(name: "Garage", on: true, action: { }),
+            Accessory(name: "Kitchen", on: true, action: { }),
+            Accessory(name: "Bathroom", on: true, action: { }),
+            Accessory(name: "Kids Room", on: true, action: { })
+        ])
+    }
+}
+
 class HostingController: WKHostingController<ContentView> {
     override var body: ContentView {
-        return ContentView(dataSource: RowDataSource([
-            AccessoryModel(id: 1, name: "Dining Room", imageName: "circle", on: false, action: { }),
-            AccessoryModel(id: 2, name: "Living Room", imageName: "square", on: false, action: { }),
-            AccessoryModel(id: 3, name: "Garage", imageName: "triangle", on: true, action: { }),
-            AccessoryModel(id: 4, name: "Kitchen", imageName: "circle", on: true, action: { }),
-            AccessoryModel(id: 5, name: "Bathroom", imageName: "square.fill", on: true, action: { }),
-            AccessoryModel(id: 6, name: "Kids Room", imageName: "triangle", on: true, action: { })
-            
-        ]))
+        return ContentView(dataSource: RowDataSource(MockHome()))
     }
 }

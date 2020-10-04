@@ -9,10 +9,10 @@ import SwiftUI
 
 struct AccessoryView: View {
     // MARK: - Data
-    let data: AccessoryModel
+    let data: AccessoryViewModel
     
     // MARK: - Initialization
-    init(_ data: AccessoryModel) {
+    init(_ data: AccessoryViewModel) {
         self.data = data
     }
     
@@ -21,7 +21,7 @@ struct AccessoryView: View {
     
     // MARK: - Subviews
     var image: some View {
-        Image(systemName: self.data.imageName)
+        Image(systemName: "circle")
             .resizable()
             .frame(width: 16, height: 16)
             .foregroundColor(.yellow)

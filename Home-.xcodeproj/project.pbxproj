@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10252B9F25144B68001D5CDD /* AccessoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252B9E25144B68001D5CDD /* AccessoryModel.swift */; };
+		10252B9F25144B68001D5CDD /* AccessoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */; };
 		10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA025144B94001D5CDD /* RowDataSource.swift */; };
 		10252BA325144BEA001D5CDD /* AccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA225144BEA001D5CDD /* AccessoryView.swift */; };
 		107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107A053B25143EA0005CB391 /* ViewExtensions.swift */; };
@@ -69,7 +69,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		10252B9E25144B68001D5CDD /* AccessoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryModel.swift; sourceTree = "<group>"; };
+		10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryViewModel.swift; sourceTree = "<group>"; };
 		10252BA025144B94001D5CDD /* RowDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowDataSource.swift; sourceTree = "<group>"; };
 		10252BA225144BEA001D5CDD /* AccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryView.swift; sourceTree = "<group>"; };
 		107A053B25143EA0005CB391 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 		10252B9C25144B46001D5CDD /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				10252B9E25144B68001D5CDD /* AccessoryModel.swift */,
+				10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -345,7 +345,7 @@
 				10FF3C0025118E27007C5A38 /* ComplicationController.swift in Sources */,
 				10FF3BFA25118E27007C5A38 /* ContentView.swift in Sources */,
 				10252BA325144BEA001D5CDD /* AccessoryView.swift in Sources */,
-				10252B9F25144B68001D5CDD /* AccessoryModel.swift in Sources */,
+				10252B9F25144B68001D5CDD /* AccessoryViewModel.swift in Sources */,
 				107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */,
 				10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */,
 				10FF3BFE25118E27007C5A38 /* ExtensionDelegate.swift in Sources */,

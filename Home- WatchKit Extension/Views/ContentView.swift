@@ -8,30 +8,44 @@
 import SwiftUI
 
 struct ContentView: View {
-    let dataSource: RowDataSource
+    @ObservedObject
+    var dataSource: RowDataSource
     
-    var scrollViewContent: some View {
+    var noHomeContent: some View {
+        VStack {
+            Spacer()
+            Text("Uh oh!")
+            Spacer()
+            Text("It doesn't look like you have any accessories in your home.\n\nPlease open your Home app on your iPhone to set it up.")
+            .font(.system(size: 10))
+                .lineLimit(10)
+            Spacer()
+        }
+    }
+    
+    var homeContent: some View {
         ForEach(dataSource.rows) { row in
             
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Spacer(minLength: 1)
+                Spacer(1)
                 
-                AccessoryView(row.columnOneModel); AccessoryView(row.columnTwoModel)
+                AccessoryView(row.columnOneModel)
+                AccessoryView(row.columnTwoModel)
                 
-                Spacer(minLength: 1)
+                Spacer(1)
             }.listRowBackground(Color.clear)
         }
     }
     
     var body: some View {
         VStack {
-            Spacer(minLength: 1)
-            
-            scrollViewContent
-            
-            ScrollView {
-                Spacer(minLength: 4)
-                
+            if dataSource.rows.isEmpty {
+                noHomeContent
+            } else {
+                ScrollView {
+                    Spacer(2)
+                    homeContent
+                }
             }
         }
     }
@@ -39,13 +53,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(dataSource: RowDataSource([
-            AccessoryModel(id: 1, name: "Dining Room", imageName: "circle", on: false, action: { }),
-            AccessoryModel(id: 2, name: "Living Room", imageName: "square", on: false, action: { }),
-            AccessoryModel(id: 3, name: "Garage", imageName: "triangle", on: true, action: { }),
-            AccessoryModel(id: 4, name: "Kitchen", imageName: "circle", on: true, action: { }),
-            AccessoryModel(id: 5, name: "Bathroom", imageName: "square.fill", on: true, action: { }),
-            AccessoryModel(id: 6, name: "Kids Room", imageName: "triangle", on: true, action: { })
-        ]))
+//        ContentView(dataSource: RowDataSource([]))
+        return ContentView(dataSource: RowDataSource(MockHome()))
     }
 }
