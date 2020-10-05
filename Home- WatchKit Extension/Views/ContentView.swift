@@ -29,8 +29,15 @@ struct ContentView: View {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Spacer(1)
                 
+                // Column 1
                 AccessoryView(row.columnOneModel)
-                AccessoryView(row.columnTwoModel)
+                
+                // Column 2
+                if let columnTwoModel = row.columnTwoModel {
+                    AccessoryView(columnTwoModel)
+                } else {
+                    BlankAccessory()
+                }
                 
                 Spacer(1)
             }.listRowBackground(Color.clear)
@@ -48,12 +55,14 @@ struct ContentView: View {
                 }
             }
         }
+        .onAppear {
+            dataSource.forceUpdateAccessories()
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-//        ContentView(dataSource: RowDataSource([]))
-        return ContentView(dataSource: RowDataSource(MockHome()))
+        ContentView(dataSource: RowDataSource(MockHome()))
     }
 }
