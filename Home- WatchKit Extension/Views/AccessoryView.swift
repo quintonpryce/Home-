@@ -25,10 +25,10 @@ struct AccessoryView: View {
     // MARK: - Subviews
     var image: some View {
         Image(systemName: model.imageName)
-            .resizable()
             .frame(width: 12, height: 16)
             .foregroundColor(.yellow)
             .shadow(radius: 10)
+            .aspectRatio(contentMode: .fit)
     }
     
     var title: some View {
@@ -44,13 +44,9 @@ struct AccessoryView: View {
             .stroke(model.accentColor, lineWidth: 2)
     }
     
-    func toggle() {
-        model.toggle()
-    }
-    
     // MARK: - Body
     var body: some View {
-        Button(action: { toggle() }) {
+        Button(action: { model.toggle() }) {
             VStack(alignment: .center, spacing: 0, content: {
                 Spacer(2)
                 image
@@ -69,11 +65,13 @@ struct AccessoryView: View {
 
 struct AccessoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let accessoryOn = Accessory(name: "Test name", on: true, action: { })
-        let accessoryOff = Accessory(name: "Test name", on: false, action: { })
+        let accessoryOn = Accessory(name: "Test name", on: true, isResponsive: true, action: { })
+        let accessoryOff = Accessory(name: "Test name", on: false, isResponsive: true, action: { })
+        let accessoryNotResponsive = Accessory(name: "Test name", on: true, isResponsive: false, action: { })
         VStack {
             AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOn))
             AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOff))
+            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryNotResponsive))
         }
     }
 }

@@ -47,15 +47,21 @@ class PrimaryHome: NSObject, Home {
                   let service = characteristic.service else { return }
             
             let name = service.name
-            let action = {
+            let updateValue = {
                 characteristic.writeValue(!value) { [weak self] error in
                     print("characterstic error: " + error.debugDescription)
                     self?.updateAccessories()
                 }
             }
             
-            // TODO: Add optional action to show unresponsive services.
-            let accessory = Accessory(name: name, on: value, action: action)
+            let action = service.isUserInteractive ? updateValue : updateAccessories
+            
+            let accessory = Accessory(
+                name: name,
+                on: value,
+                isResponsive: service.isUserInteractive,
+                action: action
+            )
             accessories.append(accessory)
         }
         
