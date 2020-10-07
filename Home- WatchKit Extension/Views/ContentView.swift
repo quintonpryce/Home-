@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    // MARK: - Properties
     @ObservedObject
     var dataSource: RowDataSource
     
@@ -30,11 +31,11 @@ struct ContentView: View {
                 Spacer(1)
                 
                 // Column 1
-                AccessoryView(row.columnOneModel)
+                ToggleableAccessoryView(row.columnOneModel)
                 
                 // Column 2
                 if let columnTwoModel = row.columnTwoModel {
-                    AccessoryView(columnTwoModel)
+                    ToggleableAccessoryView(columnTwoModel)
                 } else {
                     BlankAccessory()
                 }
@@ -44,6 +45,7 @@ struct ContentView: View {
         }
     }
     
+    // MARK: - Body
     var body: some View {
         VStack {
             if dataSource.rows.isEmpty {

@@ -12,8 +12,8 @@ class RowDataSource: ObservableObject {
     
     struct Row: Identifiable {
         let id: Int
-        let columnOneModel: AccessoryViewModel
-        let columnTwoModel: AccessoryViewModel? // Column 2 is optional in a row.
+        let columnOneModel: ToggleableAccessoryViewModel
+        let columnTwoModel: ToggleableAccessoryViewModel? // Column 2 is optional in a row.
     }
     
     // MARK: - Properties
@@ -34,7 +34,7 @@ class RowDataSource: ObservableObject {
         home.updateAccessories()
     }
     
-    private func updateRows(_ models: [AccessoryViewModel]) {
+    private func updateRows(_ models: [ToggleableAccessoryViewModel]) {
         guard !models.isEmpty else {
             self.rows = []
             return
@@ -62,11 +62,11 @@ class RowDataSource: ObservableObject {
 
 // MARK: - HomeObserver
 extension RowDataSource: HomeObserver {
-    func didUpdateAccessories(_ accessories: [Accessory]) {
+    func didUpdateAccessories(_ accessories: [ToggleableAccessory]) {
         var id = 0
-        let viewModels = accessories.map { accessory -> AccessoryViewModel in
+        let viewModels = accessories.map { accessory -> ToggleableAccessoryViewModel in
             id += 1
-            return AccessoryViewModel(id: id, accessory: accessory)
+            return ToggleableAccessoryViewModel(id: id, accessory: accessory)
         }
         
         updateRows(viewModels)

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AccessoryView: View {
+struct ToggleableAccessoryView: View {
     // MARK: - Dimensions
     private struct Dimension {
         static let cornerRadius: CGFloat = 8
@@ -15,10 +15,10 @@ struct AccessoryView: View {
     
     // MARK: - Properties
     @ObservedObject
-    var model: AccessoryViewModel
+    var model: ToggleableAccessoryViewModel
     
     // MARK: - Initialization
-    init(_ model: AccessoryViewModel) {
+    init(_ model: ToggleableAccessoryViewModel) {
         self.model = model
     }
     
@@ -65,13 +65,13 @@ struct AccessoryView: View {
 
 struct AccessoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let accessoryOn = Accessory(name: "Test name", on: true, isResponsive: true, action: { })
-        let accessoryOff = Accessory(name: "Test name", on: false, isResponsive: true, action: { })
-        let accessoryNotResponsive = Accessory(name: "Test name", on: true, isResponsive: false, action: { })
+        let accessoryOn = ToggleableAccessory(name: "Test name", on: true, isResponsive: true, action: { })
+        let accessoryOff = ToggleableAccessory(name: "Test name", on: false, isResponsive: true, action: { })
+        let accessoryNotResponsive = ToggleableAccessory(name: "Test name", on: true, isResponsive: false, action: { })
         VStack {
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOn))
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOff))
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryNotResponsive))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOn))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOff))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryNotResponsive))
         }
     }
 }

@@ -11,6 +11,6 @@ struct BlankAccessory: View {
     // MARK: - Body
     var body: some View {
         Spacer()
-        .frame(width: 60, height: 34, alignment: .top)
+        .frame(width: 60, height: 0, alignment: .top)
     }
 }

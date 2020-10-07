@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10252B9F25144B68001D5CDD /* AccessoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */; };
+		10252B9F25144B68001D5CDD /* ToggleableAccessoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252B9E25144B68001D5CDD /* ToggleableAccessoryViewModel.swift */; };
 		10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA025144B94001D5CDD /* RowDataSource.swift */; };
-		10252BA325144BEA001D5CDD /* AccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA225144BEA001D5CDD /* AccessoryView.swift */; };
+		10252BA325144BEA001D5CDD /* ToggleableAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA225144BEA001D5CDD /* ToggleableAccessoryView.swift */; };
 		107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107A053B25143EA0005CB391 /* ViewExtensions.swift */; };
-		10BAFA7E252A05BB0050C6B5 /* Accessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10BAFA7D252A05BB0050C6B5 /* Accessory.swift */; };
+		10BAFA7E252A05BB0050C6B5 /* ToggleableAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */; };
 		10F7D417252A6D9800126FC7 /* BlankAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F7D416252A6D9800126FC7 /* BlankAccessoryView.swift */; };
 		10FF3BE625118E23007C5A38 /* Home- WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 10FF3BE525118E23007C5A38 /* Home- WatchKit App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		10FF3BEC25118E23007C5A38 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10FF3BEA25118E23007C5A38 /* Interface.storyboard */; };
@@ -24,7 +24,7 @@
 		10FF3C0225118E27007C5A38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10FF3C0125118E27007C5A38 /* Assets.xcassets */; };
 		10FF3C0525118E27007C5A38 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10FF3C0425118E27007C5A38 /* Preview Assets.xcassets */; };
 		10FF3C1725118F3C007C5A38 /* HomeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FF3C1625118F3C007C5A38 /* HomeKit.framework */; };
-		10FF3C19251190E2007C5A38 /* HomeKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FF3C18251190E2007C5A38 /* HomeKitManager.swift */; };
+		10FF3C19251190E2007C5A38 /* PrimaryHome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FF3C18251190E2007C5A38 /* PrimaryHome.swift */; };
 		10FF3C1B2511AD78007C5A38 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FF3C1A2511AD78007C5A38 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -71,12 +71,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryViewModel.swift; sourceTree = "<group>"; };
+		10252B9E25144B68001D5CDD /* ToggleableAccessoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessoryViewModel.swift; sourceTree = "<group>"; };
 		10252BA025144B94001D5CDD /* RowDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowDataSource.swift; sourceTree = "<group>"; };
-		10252BA225144BEA001D5CDD /* AccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryView.swift; sourceTree = "<group>"; };
+		10252BA225144BEA001D5CDD /* ToggleableAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessoryView.swift; sourceTree = "<group>"; };
 		107A053B25143EA0005CB391 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		10AEABB92514369D00F607CD /* Home- WatchKit Extension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Home- WatchKit Extension.entitlements"; sourceTree = "<group>"; };
-		10BAFA7D252A05BB0050C6B5 /* Accessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessory.swift; sourceTree = "<group>"; };
+		10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessory.swift; sourceTree = "<group>"; };
 		10F7D416252A6D9800126FC7 /* BlankAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlankAccessoryView.swift; sourceTree = "<group>"; };
 		10FF3BE125118E22007C5A38 /* Home-.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Home-.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10FF3BE525118E23007C5A38 /* Home- WatchKit App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Home- WatchKit App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,7 +92,7 @@
 		10FF3C0425118E27007C5A38 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		10FF3C0625118E27007C5A38 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		10FF3C1625118F3C007C5A38 /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS6.2.sdk/System/Library/Frameworks/HomeKit.framework; sourceTree = DEVELOPER_DIR; };
-		10FF3C18251190E2007C5A38 /* HomeKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeKitManager.swift; sourceTree = "<group>"; };
+		10FF3C18251190E2007C5A38 /* PrimaryHome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryHome.swift; sourceTree = "<group>"; };
 		10FF3C1A2511AD78007C5A38 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS6.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -112,7 +112,7 @@
 		10252B9C25144B46001D5CDD /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				10252B9E25144B68001D5CDD /* AccessoryViewModel.swift */,
+				10252B9E25144B68001D5CDD /* ToggleableAccessoryViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -128,8 +128,8 @@
 		10252BA425144CE8001D5CDD /* HomeKit */ = {
 			isa = PBXGroup;
 			children = (
-				10FF3C18251190E2007C5A38 /* HomeKitManager.swift */,
-				10BAFA7D252A05BB0050C6B5 /* Accessory.swift */,
+				10FF3C18251190E2007C5A38 /* PrimaryHome.swift */,
+				10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */,
 			);
 			path = HomeKit;
 			sourceTree = "<group>";
@@ -140,7 +140,7 @@
 				10252B9D25144B54001D5CDD /* DataSources */,
 				107A053A25143E88005CB391 /* Helpers */,
 				10252B9C25144B46001D5CDD /* Models */,
-				10252BA225144BEA001D5CDD /* AccessoryView.swift */,
+				10252BA225144BEA001D5CDD /* ToggleableAccessoryView.swift */,
 				10F7D416252A6D9800126FC7 /* BlankAccessoryView.swift */,
 				10FF3BF925118E27007C5A38 /* ContentView.swift */,
 			);
@@ -347,13 +347,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				10FF3BFC25118E27007C5A38 /* HostingController.swift in Sources */,
-				10FF3C19251190E2007C5A38 /* HomeKitManager.swift in Sources */,
-				10BAFA7E252A05BB0050C6B5 /* Accessory.swift in Sources */,
+				10FF3C19251190E2007C5A38 /* PrimaryHome.swift in Sources */,
+				10BAFA7E252A05BB0050C6B5 /* ToggleableAccessory.swift in Sources */,
 				10FF3C0025118E27007C5A38 /* ComplicationController.swift in Sources */,
 				10F7D417252A6D9800126FC7 /* BlankAccessoryView.swift in Sources */,
 				10FF3BFA25118E27007C5A38 /* ContentView.swift in Sources */,
-				10252BA325144BEA001D5CDD /* AccessoryView.swift in Sources */,
-				10252B9F25144B68001D5CDD /* AccessoryViewModel.swift in Sources */,
+				10252BA325144BEA001D5CDD /* ToggleableAccessoryView.swift in Sources */,
+				10252B9F25144B68001D5CDD /* ToggleableAccessoryViewModel.swift in Sources */,
 				107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */,
 				10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */,
 				10FF3BFE25118E27007C5A38 /* ExtensionDelegate.swift in Sources */,

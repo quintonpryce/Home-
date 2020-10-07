@@ -1,5 +1,5 @@
 //
-// AccessoryViewModel.swift
+// ToggleableAccessoryViewModel.swift
 // Home- WatchKit Extension
 //
 // 🖌 by Q on 2020-09-17.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-class AccessoryViewModel: Identifiable, ObservableObject {
+class ToggleableAccessoryViewModel: Identifiable, ObservableObject {
     var objectWillChange = ObservableObjectPublisher()
     var id: Int
     
@@ -16,7 +16,7 @@ class AccessoryViewModel: Identifiable, ObservableObject {
     
     private let action: () -> Void
     
-    var state: Accessory.State {
+    var state: ToggleableAccessory.State {
         willSet { objectWillChange.send() }
     }
     
@@ -62,7 +62,7 @@ class AccessoryViewModel: Identifiable, ObservableObject {
         self.action = { }
     }
     
-    init(id: Int, accessory: Accessory) {
+    init(id: Int, accessory: ToggleableAccessory) {
         self.id = id
         
         self.name = accessory.name
@@ -89,13 +89,13 @@ private extension Color {
 
 struct AccessoryViewModel_Previews: PreviewProvider {
     static var previews: some View {
-        let accessoryOn = Accessory(name: "Test name", on: true, isResponsive: true, action: { })
-        let accessoryOff = Accessory(name: "Test name", on: false, isResponsive: true, action: { })
-        let accessoryNotResponsive = Accessory(name: "Test name", on: true, isResponsive: false, action: { })
+        let accessoryOn = ToggleableAccessory(name: "Test name", on: true, isResponsive: true, action: { })
+        let accessoryOff = ToggleableAccessory(name: "Test name", on: false, isResponsive: true, action: { })
+        let accessoryNotResponsive = ToggleableAccessory(name: "Test name", on: true, isResponsive: false, action: { })
         VStack {
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOn))
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryOff))
-            AccessoryView(AccessoryViewModel(id: 0, accessory: accessoryNotResponsive))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOn))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOff))
+            ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryNotResponsive))
         }
     }
 }

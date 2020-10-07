@@ -1,11 +1,11 @@
 //
-// Accessory.swift
+// ToggleableAccessory.swift
 // Home- WatchKit Extension
 //
 // 🖌 by Q on 2020-10-04.
 //
 
-struct Accessory {
+struct ToggleableAccessory {
     enum State {
         case on
         case off
