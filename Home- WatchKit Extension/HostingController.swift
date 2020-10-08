@@ -20,17 +20,15 @@ class MockHome: Home {
     
     func updateAccessories() {
         observer?.didUpdateAccessories([
-            ToggleableAccessory(name: "Dining Room", on: false, isResponsive: true, action: {  }),
-            ToggleableAccessory(name: "Living Room", on: false, isResponsive: true, action: { }),
-            ToggleableAccessory(name: "Garage", on: true, isResponsive: false, action: { }),
+            ToggleableAccessory(name: "Dining Room", state: .on, action: {  }),
+            ToggleableAccessory(name: "Living Room", state: .unresponsive, action: { }),
+            ToggleableAccessory(name: "Garage", state: .off, action: { }),
         ])
     }
 }
 
 class HostingController: WKHostingController<ContentView> {
-    let home = PrimaryHome()
-    
     override var body: ContentView {
-        return ContentView(dataSource: RowDataSource(home))
+        return ContentView(dataSource: RowDataSource(PrimaryHome.shared))
     }
 }

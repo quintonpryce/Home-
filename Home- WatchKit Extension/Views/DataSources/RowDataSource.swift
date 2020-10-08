@@ -23,7 +23,7 @@ class RowDataSource: ObservableObject {
     private let home: Home
     
     // MARK: - Initialization
-    init( _ home: Home = PrimaryHome()) {
+    init( _ home: Home) {
         self.home = home
         home.observer = self
     }

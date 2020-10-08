@@ -57,9 +57,6 @@ struct ContentView: View {
                 }
             }
         }
-        .onAppear {
-            dataSource.forceUpdateAccessories()
-        }
     }
 }
 

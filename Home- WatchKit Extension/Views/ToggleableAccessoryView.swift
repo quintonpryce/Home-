@@ -65,9 +65,9 @@ struct ToggleableAccessoryView: View {
 
 struct AccessoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let accessoryOn = ToggleableAccessory(name: "Test name", on: true, isResponsive: true, action: { })
-        let accessoryOff = ToggleableAccessory(name: "Test name", on: false, isResponsive: true, action: { })
-        let accessoryNotResponsive = ToggleableAccessory(name: "Test name", on: true, isResponsive: false, action: { })
+        let accessoryOn = ToggleableAccessory(name: "Test name", state: .on, action: { })
+        let accessoryOff = ToggleableAccessory(name: "Test name", state: .unresponsive, action: { })
+        let accessoryNotResponsive = ToggleableAccessory(name: "Test name", state: .off, action: { })
         VStack {
             ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOn))
             ToggleableAccessoryView(ToggleableAccessoryViewModel(id: 0, accessory: accessoryOff))
