@@ -12,6 +12,8 @@ import SwiftUI
 class MockHome: Home {
     var observer: HomeObserver?
     
+    var numberOfAccessoriesOn: Int = 0
+    
     init() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.updateAccessories()

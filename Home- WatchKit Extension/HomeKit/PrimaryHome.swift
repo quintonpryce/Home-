@@ -13,6 +13,7 @@ protocol HomeObserver: AnyObject {
 
 protocol Home: AnyObject {
     var observer: HomeObserver? { get set }
+    var numberOfAccessoriesOn: Int { get }
     func updateAccessories()
 }
 
@@ -22,12 +23,17 @@ class PrimaryHome: NSObject, Home {
     
     weak var observer: HomeObserver?
     
+    var numberOfAccessoriesOn: Int {
+        Array(toggleableAccessories.values).filter { $0.state == .on }.count
+    }
+    
     private let homeManager = HMHomeManager()
     
     /// If the set value is not empty, the observer is called informing `didUpdateAccessories(_:)`.
     var toggleableAccessories: [UUID: ToggleableAccessory] = [:] {
         didSet {
             let toggleableAccessoriesArray = Array(toggleableAccessories.values)
+            
             guard !toggleableAccessoriesArray.isEmpty else { return }
             
             observer?.didUpdateAccessories(toggleableAccessoriesArray)
@@ -68,7 +74,7 @@ class PrimaryHome: NSObject, Home {
     }
     
     // MARK: - Helpers
-    
+
     /// Reads the characterstics most up-to-date value, and updates the characterstic.
     private func requestUpdatedValue(for characteristic: HMCharacteristic) {
         characteristic.readValue { [weak self] error in
