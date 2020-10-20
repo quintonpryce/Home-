@@ -26,7 +26,7 @@ struct ToggleableAccessoryView: View {
     var image: some View {
         Image(systemName: model.imageName)
             .frame(width: 12, height: 16)
-            .foregroundColor(.yellow)
+            .foregroundColor(.primaryYellow)
             .shadow(radius: 10)
             .aspectRatio(contentMode: .fit)
     }

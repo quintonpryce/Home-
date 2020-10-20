@@ -13,7 +13,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     var numberOfDevices: String { "7" }
     
     var homeImage: UIImage { UIImage(named: "home")! }
-    var emptyHomeImage: UIImage { UIImage(named: "home")! }
+    var emptyHomeImage: UIImage { UIImage(named: "empty home")! }
     
     // MARK: - Timeline Configuration
     
@@ -77,8 +77,8 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             return createModularSmallTemplate(forDate: date)
         case .modularLarge:
             return createModularLargeTemplate(forDate: date)
-        case .utilitarianSmall, .utilitarianSmallFlat:
-            return createUtilitarianSmallFlatTemplate(forDate: date)
+        case .utilitarianSmall:
+            return createUtilitarianSmallSquareTemplate(forDate: date)
         case .utilitarianLarge:
             return createUtilitarianLargeTemplate(forDate: date)
         case .circularSmall:
@@ -88,7 +88,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         case .graphicCorner:
             return createGraphicCornerTemplate(forDate: date)
         case .graphicCircular:
-            return Self.createGraphicCircleTemplate(forDate: date)
+            return createGraphicCircleTemplate(forDate: date)
         case .graphicRectangular:
             return createGraphicRectangularTemplate(forDate: date)
         case .graphicBezel:
@@ -104,91 +104,108 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         }
     }
     
+    // MARK: - Helpers
+    
+    var homeImageWithNumberOfDevices: UIImage {
+        homeImage.drawText(numberOfDevices, color: .white)
+    }
+    
     var imageProvider: CLKImageProvider {
-        let image = homeImage.drawText(numberOfDevices)
+        let image = homeImage.drawText(numberOfDevices, color: .white)
         return CLKImageProvider(onePieceImage: image)
     }
+    
+    var textProvider: CLKTextProvider {
+        let accessories = numberOfDevices == "1" ? "Accessory" : "Accessories"
+        return CLKSimpleTextProvider(text: "\(numberOfDevices) \(accessories) on")
+    }
+    
+    func createTintedImageProvider(_ size: CGSize) -> CLKImageProvider {
+        let homeImageWithNumberOfDevices = homeImage.drawText(numberOfDevices, color: .white)
+        let emptyHomeBackground = emptyHomeImage.resize(to: size)
+        let numberOfDevicesImage = UIImage().resize(to: size).drawText(numberOfDevices, color: .white)
+        
+        return CLKImageProvider(
+            onePieceImage: homeImageWithNumberOfDevices,
+            twoPieceImageBackground: emptyHomeBackground,
+            twoPieceImageForeground: numberOfDevicesImage
+        )
+    }
+    
+    func createFullColorImageProvider(_ size: CGSize) -> CLKFullColorImageProvider {
+        let modifiedImage = homeImage
+                .withRenderingMode(.alwaysOriginal)
+                .withTintColor(.primaryYellow)
+                .drawText(numberOfDevices, color: .white)
+                .resize(to: size)
+            
+        return CLKFullColorImageProvider(
+            fullColorImage: modifiedImage,
+            tintedImageProvider: createTintedImageProvider(size)
+        )
+    }
+    
+    // MARK: - Helpers
     
     func createModularSmallTemplate(forDate date: Date) -> CLKComplicationTemplate {
         let template = CLKComplicationTemplateModularSmallSimpleImage()
         template.imageProvider = imageProvider
-        
         return template
     }
 
     func createModularLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
         let template = CLKComplicationTemplateModularLargeStandardBody()
-        template.headerImageProvider = imageProvider
-        template.headerTextProvider = CLKSimpleTextProvider(text: "\(numberOfDevices) Accessories on")
+        template.headerTextProvider = textProvider
         template.body1TextProvider = CLKTextProvider()
-        
         return template
     }
 
-    func createUtilitarianSmallFlatTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateUtilitarianSmallFlat()
+    func createUtilitarianSmallSquareTemplate(forDate date: Date) -> CLKComplicationTemplate {
+        let template = CLKComplicationTemplateUtilitarianSmallSquare()
+        template.imageProvider = imageProvider
         return template
     }
     
     func createUtilitarianLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-
         let template = CLKComplicationTemplateUtilitarianLargeFlat()
+        template.textProvider = textProvider
         return template
     }
     
     func createCircularSmallTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let image = homeImage.drawText(numberOfDevices)
-        let imageProvider = CLKImageProvider(onePieceImage: image)
-        
         let template = CLKComplicationTemplateCircularSmallSimpleImage()
         template.imageProvider = imageProvider
-        
         return template
     }
     
     func createExtraLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateExtraLargeStackText()
+        let template = CLKComplicationTemplateExtraLargeSimpleImage()
+        template.imageProvider = imageProvider
         return template
     }
 
     func createGraphicCornerTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicCornerGaugeText()
+        let template = CLKComplicationTemplateGraphicCornerCircularImage()
+        template.imageProvider = createFullColorImageProvider(CGSize(width: 26, height: 26))
         return template
     }
     
-    // Return a graphic circle template.
-    static func createGraphicCircleTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        // Create the data providers.
-        let percentage:Float = 0.75
-        if #available(watchOSApplicationExtension 7.0, *) {
-            let uiimage = UIImage(systemName: "house.fill")!
-            
-            uiimage.withTintColor(.yellow)
-            let image = CLKComplicationTemplateCircularSmallSimpleImage(imageProvider: CLKImageProvider(onePieceImage: uiimage))
-            return image
-        } else {
-            // Fallback on earlier versions
-        }
-
-        let template = CLKComplicationTemplateGraphicCircularOpenGaugeSimpleText()
-
+    func createGraphicCircleTemplate(forDate date: Date) -> CLKComplicationTemplate {
+        let template = CLKComplicationTemplateGraphicCircularImage()
+        template.imageProvider = createFullColorImageProvider(CGSize(width: 34, height: 34))
         return template
     }
     
     // Return a large rectangular graphic template.
     func createGraphicRectangularTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicRectangularTextGauge()
+        let template = CLKComplicationTemplateGraphicRectangularLargeImage()
+        template.imageProvider = createFullColorImageProvider(CGSize(width: 46 , height: 46))
         return template
     }
     
-    // Return a circular template with text that wraps around the top of the watch's bezel.
     func createGraphicBezelTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        
-        // Create a graphic circular template with an image provider.
         let circle = CLKComplicationTemplateGraphicCircularImage()
-        let image = UIImage(named: "home")!.withRenderingMode(.alwaysOriginal).drawText(numberOfDevices).withTintColor(.yellow)
-        let resizedImage = image.copy(newSize: CGSize(width: 30, height: 30))!
-        circle.imageProvider = CLKFullColorImageProvider(fullColorImage: resizedImage)
+        circle.imageProvider = createFullColorImageProvider(CGSize(width: 26, height: 26))
         
         let template = CLKComplicationTemplateGraphicBezelCircularText()
         template.textProvider = CLKSimpleTextProvider(text: "\(numberOfDevices) Accessores on")
@@ -196,90 +213,71 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         return template
     }
     
-    // Returns an extra large graphic template
     @available(watchOSApplicationExtension 7.0, *)
     func createGraphicExtraLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        
-        return CLKComplicationTemplateGraphicExtraLargeCircularOpenGaugeSimpleText()
+        let template = CLKComplicationTemplateGraphicExtraLargeCircularImage()
+        template.imageProvider = createFullColorImageProvider(CGSize(width: 96, height: 96))
+        return template
     }
-    
-    // MARK: - Placeholder Templates
-    
-    func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
-        let future = Date().addingTimeInterval(25.0 * 60.0 * 60.0)
-        let template = createTemplate(forComplication: complication, date: future)
-        handler(template)
-    }
-    
 }
 
 struct ComplicationController_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             if #available(watchOSApplicationExtension 7.0, *) {
-                ComplicationController.createGraphicCircleTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createModularSmallTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createModularLargeTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createUtilitarianSmallSquareTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createUtilitarianLargeTemplate(forDate: Date()).previewContext(faceColor: .red)
+//                ComplicationController().createCircularSmallTemplate(forDate: Date()).previewContext(faceColor: .red)
+//                ComplicationController().createExtraLargeTemplate(forDate: Date()).previewContext()
+//
+//                ComplicationController().createGraphicCornerTemplate(forDate: Date()).previewContext(faceColor: .red)
+//                ComplicationController().createGraphicCircleTemplate(forDate: Date()).previewContext(faceColor: .red)
+//                ComplicationController().createGraphicRectangularTemplate(forDate: Date()).previewContext(faceColor: .red)
+//                ComplicationController().createGraphicBezelTemplate(forDate: Date()).previewContext(faceColor: .red)
                 
-                ComplicationController().createCircularSmallTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createGraphicExtraLargeTemplate(forDate: Date()).previewContext()
                 
-                ComplicationController().createModularSmallTemplate(forDate: Date()).previewContext()
-                
-                ComplicationController().createGraphicBezelTemplate(forDate: Date()).previewContext()
-                
-                ComplicationController().createGraphicCornerTemplate(forDate: Date()).previewContext()
-                
-                ComplicationController().createExtraLargeTemplate(forDate: Date()).previewContext()
+                CLKComplicationTemplateGraphicCircularView(HomeComplication()).previewContext()
             } else {
             }
-            
         }
     }
 }
 
 struct HomeComplication: View {
     @State var numberOfDevices = 5
+    var image: some View {
+        return Image("home")
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .foregroundColor(.primaryYellow)
+    }
 
     var body: some View {
         VStack {
-//            let image = UIImage(systemName: "house.fill")
-//            image.size = CGSize(width: 10, height: 10)
-            
             Text("\(numberOfDevices)").font(.headline)
                 .padding(EdgeInsets(top: 10, leading: 0, bottom: 4, trailing: 0))
-                .foregroundColor(.white).background(Image("home")
-                                                                                            .resizable()
-                                                                                            .aspectRatio(contentMode: .fill).foregroundColor(.yellow))
-            
-            
-        }
-            
-
-    }
-}
-
-struct GaugeSample_Previews: PreviewProvider {
-    static var previews: some View {
-        if #available(watchOSApplicationExtension 7.0, *) {
-            CLKComplicationTemplateGraphicCircularView(HomeComplication())
-                .previewContext()
-        } else {
-            // Fallback on earlier versions
+                .foregroundColor(.white)
+                .background(image)
         }
     }
 }
-
 
 private extension UIImage {
-    func drawText(_ text: String) -> UIImage {
+    func drawText(_ text: String, color: UIColor) -> UIImage {
         let isSingleDigit = text.count == 1
         let text = text.count > 2 ? "99" : text
         let image = self
         
-        let fontSize: CGFloat = isSingleDigit ? 200 : 140
+        let imageWidth = image.size.width
+        var multiplier: CGFloat { isSingleDigit ? 0.6375 : 0.4375 }
+        
+        let fontSize: CGFloat = imageWidth * multiplier
         guard let font = UIFont(name: "Helvetica Bold", size: fontSize) else {
             return image
         }
-        
-        let color: UIColor = .white
 
         UIGraphicsBeginImageContextWithOptions(image.size, false, 0)
 
@@ -288,10 +286,11 @@ private extension UIImage {
             .foregroundColor: color,
         ]
         
-        let imagePoint = CGRect(origin: CGPoint.zero, size: image.size)
+        let imagePoint = CGRect(origin: .zero, size: image.size)
         image.draw(in: imagePoint)
-        
-        let centerPoint = isSingleDigit ? CGPoint(x: 105, y: 65) : CGPoint(x: 85, y: 110)
+
+        let imageCenterPoint = imageWidth / 2
+        let centerPoint = isSingleDigit ? CGPoint(x: imageCenterPoint * 0.66, y: imageCenterPoint * 0.4) : CGPoint(x: imageCenterPoint * 0.52, y: imageCenterPoint * 0.69)
         let rect = CGRect(origin: centerPoint, size: image.size)
         
         text.draw(in: rect, withAttributes: attributes)
@@ -304,18 +303,17 @@ private extension UIImage {
 
     
     // https://stackoverflow.com/questions/2658738/the-simplest-way-to-resize-an-uiimage
-    func copy(newSize: CGSize, retina: Bool = true) -> UIImage? {
-        // In next line, pass 0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
-        // Pass 1 to force exact pixel size.
-        UIGraphicsBeginImageContextWithOptions(
-            /* size: */ newSize,
-            /* opaque: */ false,
-            /* scale: */ retina ? 0 : 1
-        )
+    func resize(to size: CGSize) -> UIImage {
         defer { UIGraphicsEndImageContext() }
-
-        draw(in: CGRect(origin: .zero, size: newSize))
-        return UIGraphicsGetImageFromCurrentImageContext()
+        
+        let isTransparent = false
+        /// 0 for current device's pixel, 1 to force exact pixel size.
+        let scale: CGFloat = .zero
+        
+        UIGraphicsBeginImageContextWithOptions(size, isTransparent, scale)
+        
+        draw(in: CGRect(origin: .zero, size: size))
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
     
 }

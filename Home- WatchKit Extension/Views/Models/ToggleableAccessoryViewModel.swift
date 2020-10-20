@@ -39,7 +39,7 @@ class ToggleableAccessoryViewModel: Identifiable, ObservableObject {
     var accentColor: Color {
         switch state {
         case .on: return .clear
-        case .off: return .yellow
+        case .off: return .primaryYellow
         case .unresponsive: return .red
         }
     }
