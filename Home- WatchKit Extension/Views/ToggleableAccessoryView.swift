@@ -39,14 +39,21 @@ struct ToggleableAccessoryView: View {
             .multilineTextAlignment(.center)
     }
     
+    var spinner: some View {
+        VStack {
+            if model.isLoading { ProgressView() }
+        }
+    }
+    
     var overlay: some View {
         RoundedRectangle(cornerRadius: Dimension.cornerRadius)
             .stroke(model.accentColor, lineWidth: 2)
+            .overlay(spinner)
     }
     
     // MARK: - Body
     var body: some View {
-        Button(action: { model.toggle() }) {
+        Button(action: model.toggle) {
             VStack(alignment: .center, spacing: 0, content: {
                 Spacer(2)
                 image

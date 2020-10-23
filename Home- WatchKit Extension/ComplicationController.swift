@@ -10,7 +10,7 @@ import SwiftUI
 
 class ComplicationController: NSObject, CLKComplicationDataSource {
     
-    var numberOfDevices: String { "7" }
+    var numberOfDevices: String { "\(ComplicationHomeProvider.shared.numberOfAccessoriesOn)" }
     
     var homeImage: UIImage { UIImage(named: "home")! }
     var emptyHomeImage: UIImage { UIImage(named: "empty home")! }
@@ -56,7 +56,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             entries.append(createTimelineEntry(forComplication: complication, date: current))
             current = current.addingTimeInterval(fiveMinutes)
         }
-        
+
         handler(entries)
     }
     
@@ -106,13 +106,14 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     // MARK: - Helpers
     
+    var hasDevicesOn: Bool { numberOfDevices != "0" }
+    
     var homeImageWithNumberOfDevices: UIImage {
-        homeImage.drawText(numberOfDevices, color: .white)
+        hasDevicesOn ? homeImage.drawText(numberOfDevices, color: .white) : emptyHomeImage
     }
     
     var imageProvider: CLKImageProvider {
-        let image = homeImage.drawText(numberOfDevices, color: .white)
-        return CLKImageProvider(onePieceImage: image)
+        return CLKImageProvider(onePieceImage: homeImageWithNumberOfDevices)
     }
     
     var textProvider: CLKTextProvider {
@@ -121,14 +122,15 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     }
     
     func createTintedImageProvider(_ size: CGSize) -> CLKImageProvider {
-        let homeImageWithNumberOfDevices = homeImage.drawText(numberOfDevices, color: .white)
         let emptyHomeBackground = emptyHomeImage.resize(to: size)
-        let numberOfDevicesImage = UIImage().resize(to: size).drawText(numberOfDevices, color: .white)
+        var numberOfDevicesImage: UIImage {
+            UIImage().resize(to: size).drawText(numberOfDevices, color: .white)
+        }
         
         return CLKImageProvider(
             onePieceImage: homeImageWithNumberOfDevices,
             twoPieceImageBackground: emptyHomeBackground,
-            twoPieceImageForeground: numberOfDevicesImage
+            twoPieceImageForeground: hasDevicesOn ? numberOfDevicesImage : UIImage()
         )
     }
     
@@ -232,10 +234,10 @@ struct ComplicationController_Previews: PreviewProvider {
 //                ComplicationController().createCircularSmallTemplate(forDate: Date()).previewContext(faceColor: .red)
 //                ComplicationController().createExtraLargeTemplate(forDate: Date()).previewContext()
 //
-//                ComplicationController().createGraphicCornerTemplate(forDate: Date()).previewContext(faceColor: .red)
-//                ComplicationController().createGraphicCircleTemplate(forDate: Date()).previewContext(faceColor: .red)
-//                ComplicationController().createGraphicRectangularTemplate(forDate: Date()).previewContext(faceColor: .red)
-//                ComplicationController().createGraphicBezelTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createGraphicCornerTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createGraphicCircleTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createGraphicRectangularTemplate(forDate: Date()).previewContext(faceColor: .red)
+                ComplicationController().createGraphicBezelTemplate(forDate: Date()).previewContext(faceColor: .red)
                 
                 ComplicationController().createGraphicExtraLargeTemplate(forDate: Date()).previewContext()
                 

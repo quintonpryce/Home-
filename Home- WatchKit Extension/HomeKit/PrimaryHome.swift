@@ -6,6 +6,7 @@
 //
 
 import HomeKit
+import ClockKit
 
 protocol HomeObserver: AnyObject {
     func didUpdateAccessories(_ toggleableAccessories: [ToggleableAccessory])
@@ -15,6 +16,72 @@ protocol Home: AnyObject {
     var observer: HomeObserver? { get set }
     var numberOfAccessoriesOn: Int { get }
     func updateAccessories()
+}
+
+protocol ComplicationHomeProviderDelegate: AnyObject {
+    func didUpdateNumberOfAccessoriesOn(_ numberOfAccessoriesOn: Int)
+}
+
+
+
+class ComplicationHomeProvider: NSObject, HMHomeManagerDelegate {
+    static let shared = ComplicationHomeProvider()
+    
+    private let homeManager = HMHomeManager()
+    
+    private var numberOfKickedRequests = 0
+    
+    var numberOfAccessoriesOn = 0
+    
+    override init() {
+        super.init()
+        homeManager.delegate = self
+    }
+    
+    func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
+        updateNumberOfAccessoriesOn()
+    }
+    
+    func updateNumberOfAccessoriesOn() {
+        guard numberOfKickedRequests == 0 else { return }
+        
+        numberOfAccessoriesOn = 0
+        
+        guard let primaryServices = homeManager.primaryHome?.primaryServices else { return }
+        
+        let toggleableCharacterstics = primaryServices.flatMap { service -> [HMCharacteristic] in
+            service.characteristics.filter { $0.isBool && $0.isWriteable }
+        }
+        
+        numberOfKickedRequests = toggleableCharacterstics.count
+        
+        toggleableCharacterstics.forEach { characteristic in
+            characteristic.readValue { [weak self] _ in
+                self?.didReadCharactisticValue(characteristic)
+            }
+        }
+    }
+    
+    private func didReadCharactisticValue(_ characteristic: HMCharacteristic) {
+        numberOfKickedRequests -= 1
+        
+        if let isOn = characteristic.value as? Bool, isOn {
+            numberOfAccessoriesOn += 1
+        }
+        
+        if numberOfKickedRequests <= 0 {
+            forceReloadComplications()
+        }
+    }
+    
+    private func forceReloadComplications() {
+        let server = CLKComplicationServer.sharedInstance()
+
+        for complication in server.activeComplications ?? [] {
+            server.reloadTimeline(for: complication)
+        }
+    }
+    
 }
 
 class PrimaryHome: NSObject, Home {
@@ -30,15 +97,7 @@ class PrimaryHome: NSObject, Home {
     private let homeManager = HMHomeManager()
     
     /// If the set value is not empty, the observer is called informing `didUpdateAccessories(_:)`.
-    var toggleableAccessories: [UUID: ToggleableAccessory] = [:] {
-        didSet {
-            let toggleableAccessoriesArray = Array(toggleableAccessories.values)
-            
-            guard !toggleableAccessoriesArray.isEmpty else { return }
-            
-            observer?.didUpdateAccessories(toggleableAccessoriesArray)
-        }
-    }
+    private var toggleableAccessories: [UUID: ToggleableAccessory] = [:]
     
     // MARK: - Initialization
     override init() {
@@ -67,10 +126,19 @@ class PrimaryHome: NSObject, Home {
             
             toggleableAccessories[characteristic.uniqueIdentifier] = toggleableAccessory
             requestUpdatedValue(for: characteristic)
+            // need to queue up updating values. Maybe a loading screen?
         }
         
         self.toggleableAccessories.removeAll()
         self.toggleableAccessories = toggleableAccessories
+    }
+    
+    private func sendObserverUpdatedAccessories() {
+        let sortedAccessoriesArray = Array(toggleableAccessories.values.sorted { $0.name <= $1.name })
+        
+        guard !sortedAccessoriesArray.isEmpty else { return }
+        
+        observer?.didUpdateAccessories(sortedAccessoriesArray)
     }
     
     // MARK: - Helpers
@@ -82,7 +150,8 @@ class PrimaryHome: NSObject, Home {
         }
     }
     
-    /// Updates the existing characterstic with the new state if it exists, if not it attempts to build one and set the value there.
+    /// Grabs the existing accessory if it exists, if not it attempts to build one and set the value there.
+    /// If we get an accessory we set the state and a new action and set it to the appropriate accessory.
     private func stateUpdated(for characteristic: HMCharacteristic, to state: ToggleableAccessory.State) {
         let existingToggleableAccessory = toggleableAccessories[characteristic.uniqueIdentifier]
         guard var toggleableAccessory = existingToggleableAccessory ?? buildToggleableAccessory(characteristic) else {
@@ -90,9 +159,11 @@ class PrimaryHome: NSObject, Home {
         }
         
         toggleableAccessory.state = state
-        toggleableAccessory.action = createAction(for: characteristic, state: state)
-        toggleableAccessories[characteristic.uniqueIdentifier] = toggleableAccessory
+        toggleableAccessory.action = createToggleAction(for: characteristic, state: state)
         
+        toggleableAccessories[characteristic.uniqueIdentifier]?.state = state
+        toggleableAccessories[characteristic.uniqueIdentifier]?.action = createToggleAction(for: characteristic, state: state)
+        sendObserverUpdatedAccessories()
     }
     
     /// Updates the characterstics ToggleableAccessory based on the value after some update from the characterstic.
@@ -113,21 +184,27 @@ class PrimaryHome: NSObject, Home {
             return
         }
         
+        toggleableAccessories[characteristic.uniqueIdentifier]?.state = !isOn ? .on : .off
+        
         characteristic.writeValue(!isOn) { [weak self] error in
             self?.charactersticValueUpdated(characteristic, error: error)
         }
     }
     
-    private func createAction(for characteristic: HMCharacteristic, state: ToggleableAccessory.State) -> () -> Void {
-        return { [weak self] in
+    private func createToggleAction(for characteristic: HMCharacteristic, state: ToggleableAccessory.State) -> () -> Void {
+        let action = { [weak self] in
             guard let self = self else { return }
+            
             switch state {
             case .unresponsive:
                 self.requestUpdatedValue(for: characteristic)
+                
             case .on, .off:
                 self.toggle(characteristic)
             }
         }
+        
+        return action
     }
     
     private func buildToggleableAccessory(_ characteristic: HMCharacteristic) -> ToggleableAccessory? {
@@ -137,7 +214,7 @@ class PrimaryHome: NSObject, Home {
         
         let state = characteristic.toggleableState
         
-        let action = createAction(for: characteristic, state: state)
+        let action = createToggleAction(for: characteristic, state: state)
         
         let toggleableAccessory = ToggleableAccessory(
             name: name,
@@ -169,13 +246,15 @@ extension PrimaryHome: HMHomeManagerDelegate {
 
 private extension HMCharacteristic {
     var toggleableState: ToggleableAccessory.State {
-        guard let isReachable = service?.accessory?.isReachable, isReachable,
-              let isOn = value as? Bool
-        else {
+        guard let isOn = value as? Bool, isReachable else {
             return .unresponsive
         }
         
         return isOn ? .on : .off
+    }
+    
+    var isReachable: Bool {
+        service?.accessory?.isReachable ?? false
     }
     
     var isBool: Bool {

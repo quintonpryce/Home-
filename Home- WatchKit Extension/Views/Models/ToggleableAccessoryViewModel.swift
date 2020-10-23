@@ -20,6 +20,8 @@ class ToggleableAccessoryViewModel: Identifiable, ObservableObject {
         willSet { objectWillChange.send() }
     }
     
+    var isLoading: Bool = false
+    
     var textColor: Color {
         switch state {
         case .on: return .black
@@ -77,6 +79,8 @@ class ToggleableAccessoryViewModel: Identifiable, ObservableObject {
         case .off: state = .on
         case .unresponsive: break
         }
+        
+        isLoading = true
         
         action()
     }
