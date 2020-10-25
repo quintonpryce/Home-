@@ -8,12 +8,8 @@
 import HomeKit
 import ClockKit
 
-protocol ComplicationHomeProviderDelegate: AnyObject {
-    func didUpdateNumberOfAccessoriesOn(_ numberOfAccessoriesOn: Int)
-}
-
 class ComplicationHomeProvider: NSObject, HMHomeManagerDelegate {
-    static let shared = ComplicationHomeProvider()
+    static var shared = ComplicationHomeProvider()
     
     private let homeManager = HMHomeManager()
     
@@ -21,21 +17,20 @@ class ComplicationHomeProvider: NSObject, HMHomeManagerDelegate {
     
     var numberOfAccessoriesOn = 0
     
+    var completion: (() -> Void)?
+    
     override init() {
         super.init()
         homeManager.delegate = self
     }
     
     func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
-//        updateNumberOfAccessoriesOn()
+        forceUpdateNumberOfAccessoriesOn()
+        Log.i("Complication Home Updater did update homes.")
     }
     
-    func updateNumberOfAccessoriesOn(with value: Int) {
-        numberOfAccessoriesOn = value
-    }
-    
-    func forcefullyUpdateNumberOfAccessoriesOn() {
-        Log.i("[\(Date())] Started updating accessories for complications.")
+    func forceUpdateNumberOfAccessoriesOn() {
+        Log.i("Started updating accessories for complications.")
         guard numberOfKickedRequests == 0 else { return }
         
         numberOfAccessoriesOn = 0
@@ -48,33 +43,40 @@ class ComplicationHomeProvider: NSObject, HMHomeManagerDelegate {
         
         numberOfKickedRequests = toggleableCharacterstics.count
         
-        Log.i("[\(Date())] Started requesting characterstics update their values for complications.")
+        Log.i("Started requesting \(toggleableCharacterstics.count) characterstic(s) to update their values for complications.")
         toggleableCharacterstics.forEach { characteristic in
-            characteristic.readValue { [weak self] error in
-                guard error == nil else { return }
-                self?.didReadCharactisticValue(characteristic)
+            if let value = characteristic.value as? Bool, value {
+                numberOfAccessoriesOn += 1
+            }
+            characteristic.readValue { error in
+                Log.e(error?.localizedDescription ?? "No error")
+                
             }
         }
+        Log.i("Number of accessories on: \(numberOfAccessoriesOn).")
+        
+        completion?()
     }
     
     private func didReadCharactisticValue(_ characteristic: HMCharacteristic) {
         numberOfKickedRequests -= 1
+        Log.i("Did read value from characteristic for complication. Waiting for \(numberOfKickedRequests) additional requests.")
         
         if let isOn = characteristic.value as? Bool, isOn {
             numberOfAccessoriesOn += 1
         }
         
         if numberOfKickedRequests <= 0 {
-            forceReloadComplications()
+            completion?()
         }
     }
     
     func forceReloadComplications() {
         let server = CLKComplicationServer.sharedInstance()
-        Log.i("[\(Date())] Started reloading \(server.activeComplications?.count ?? 0) complications.")
+        Log.i("Started reloading \(server.activeComplications?.count ?? 0) complication(s).")
         for complication in server.activeComplications ?? [] {
             server.reloadTimeline(for: complication)
-            Log.i("[\(Date())] Reloading complication: \(complication.identifier)")
+            Log.i("Reloading complication: \(complication.debugDescription)")
         }
     }
 }

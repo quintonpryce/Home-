@@ -12,24 +12,22 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     
     var numberOfDevices: String { "\(ComplicationHomeProvider.shared.numberOfAccessoriesOn)" }
     
-    var homeImage: UIImage { UIImage(named: "home")! }
-    var emptyHomeImage: UIImage { UIImage(named: "empty home")! }
+    var homeImage: UIImage = UIImage(named: "home")!
+    var emptyHomeImage: UIImage = UIImage(named: "empty home")!
     
     // MARK: - Timeline Configuration
     
     func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Void) {
-        handler([.forward, .backward])
+        handler([])
     }
     
     func getTimelineEndDate(for complication: CLKComplication, withHandler handler: @escaping (Date?) -> Void) {
-        handler(Date().addingTimeInterval(24.0 * 60.0 * 60.0))
+        handler(Date())
     }
     
     func getPrivacyBehavior(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationPrivacyBehavior) -> Void) {
         handler(.showOnLockScreen)
     }
-    
-
     
     // MARK: - Timeline Population
     
@@ -39,25 +37,7 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     }
     
     func getTimelineEntries(for complication: CLKComplication, after date: Date, limit: Int, withHandler handler: @escaping ([CLKComplicationTimelineEntry]?) -> Void) {
-        // Call the handler with the timeline entries prior to the given date
-        let fiveMinutes = 5.0 * 60.0
-        let twentyFourHours = 24.0 * 60.0 * 60.0
-        
-        // Create an array to hold the timeline entries.
-        var entries = [CLKComplicationTimelineEntry]()
-        
-        // Calculate the start and end dates.
-        var current = date.addingTimeInterval(fiveMinutes)
-        let endDate = date.addingTimeInterval(twentyFourHours)
-        
-        // Create a timeline entry for every five minutes from the starting time.
-        // Stop once you reach the limit or the end date.
-        while (current.compare(endDate) == .orderedAscending) && (entries.count < limit) {
-            entries.append(createTimelineEntry(forComplication: complication, date: current))
-            current = current.addingTimeInterval(fiveMinutes)
-        }
-
-        handler(entries)
+        handler([])
     }
     
     // Return a timeline entry for the specified complication and date.
@@ -94,11 +74,9 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         case .graphicBezel:
             return createGraphicBezelTemplate(forDate: date)
         case .graphicExtraLarge:
-            if #available(watchOSApplicationExtension 7.0, *) {
-                return createGraphicExtraLargeTemplate(forDate: date)
-            } else {
-                fatalError("Graphic Extra Large template is only available on watchOS 7.")
-            }
+            return createGraphicExtraLargeTemplate(forDate: date)
+        case .utilitarianSmallFlat:
+            fatalError("Utilitarian small flat complication not supported.")
         @unknown default:
             fatalError("*** Unknown Complication Family ***")
         }
@@ -149,75 +127,87 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     // MARK: - Helpers
     
     func createModularSmallTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateModularSmallSimpleImage()
-        template.imageProvider = imageProvider
+        let template = CLKComplicationTemplateModularSmallSimpleImage(
+            imageProvider: imageProvider
+        )
         return template
     }
 
     func createModularLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateModularLargeStandardBody()
-        template.headerTextProvider = textProvider
-        template.body1TextProvider = CLKTextProvider()
+        let template = CLKComplicationTemplateModularLargeStandardBody(
+            headerTextProvider: textProvider,
+            body1TextProvider: CLKTextProvider(format: "")
+        )
         return template
     }
 
     func createUtilitarianSmallSquareTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateUtilitarianSmallSquare()
-        template.imageProvider = imageProvider
+        let template = CLKComplicationTemplateUtilitarianSmallSquare(
+            imageProvider: imageProvider
+        )
         return template
     }
     
     func createUtilitarianLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateUtilitarianLargeFlat()
-        template.textProvider = textProvider
+        let template = CLKComplicationTemplateUtilitarianLargeFlat(
+            textProvider: textProvider
+        )
         return template
     }
     
     func createCircularSmallTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateCircularSmallSimpleImage()
-        template.imageProvider = imageProvider
+        let template = CLKComplicationTemplateCircularSmallSimpleImage(
+            imageProvider: imageProvider
+        )
         return template
     }
     
     func createExtraLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateExtraLargeSimpleImage()
-        template.imageProvider = imageProvider
+        let template = CLKComplicationTemplateExtraLargeSimpleImage(
+            imageProvider: imageProvider
+        )
         return template
     }
 
     func createGraphicCornerTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicCornerCircularImage()
-        template.imageProvider = createFullColorImageProvider(CGSize(width: 26, height: 26))
+        let template = CLKComplicationTemplateGraphicCornerCircularImage(
+            imageProvider: createFullColorImageProvider(CGSize(width: 26, height: 26))
+        )
         return template
     }
     
     func createGraphicCircleTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicCircularImage()
-        template.imageProvider = createFullColorImageProvider(CGSize(width: 34, height: 34))
+        let template = CLKComplicationTemplateGraphicCircularImage(
+            imageProvider: createFullColorImageProvider(CGSize(width: 34, height: 34))
+        )
         return template
     }
     
     // Return a large rectangular graphic template.
     func createGraphicRectangularTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicRectangularLargeImage()
-        template.imageProvider = createFullColorImageProvider(CGSize(width: 46 , height: 46))
+        let template = CLKComplicationTemplateGraphicRectangularLargeImage(
+            textProvider: CLKTextProvider(format: ""),
+            imageProvider: createFullColorImageProvider(CGSize(width: 46 , height: 46))
+        )
         return template
     }
     
     func createGraphicBezelTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let circle = CLKComplicationTemplateGraphicCircularImage()
-        circle.imageProvider = createFullColorImageProvider(CGSize(width: 26, height: 26))
+        let circle = CLKComplicationTemplateGraphicCircularImage(
+            imageProvider: createFullColorImageProvider(CGSize(width: 26, height: 26))
+        )
         
-        let template = CLKComplicationTemplateGraphicBezelCircularText()
+        let template = CLKComplicationTemplateGraphicBezelCircularText(
+            circularTemplate: circle
+        )
         template.textProvider = CLKSimpleTextProvider(text: "\(numberOfDevices) Accessores on")
-        template.circularTemplate = circle
         return template
     }
     
-    @available(watchOSApplicationExtension 7.0, *)
     func createGraphicExtraLargeTemplate(forDate date: Date) -> CLKComplicationTemplate {
-        let template = CLKComplicationTemplateGraphicExtraLargeCircularImage()
-        template.imageProvider = createFullColorImageProvider(CGSize(width: 96, height: 96))
+        let template = CLKComplicationTemplateGraphicExtraLargeCircularImage(
+            imageProvider: createFullColorImageProvider(CGSize(width: 96, height: 96))
+        )
         return template
     }
 }

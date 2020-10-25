@@ -23,9 +23,15 @@ class PrimaryHome: NSObject, Home {
     
     weak var observer: HomeObserver?
     
-    var numberOfAccessoriesOn: Int {
-        Array(toggleableAccessories.values).filter { $0.state == .on }.count
+    var numberOfAccessoriesOn: Int = 0 {
+        didSet {
+            DispatchQueue.main.async {
+                ComplicationHomeProvider.shared.forceReloadComplications()
+            }
+        }
     }
+    
+    private var background = DispatchQueue(label: "Background thread", qos: .userInitiated)
     
     private let homeManager = HMHomeManager()
     
@@ -42,6 +48,8 @@ class PrimaryHome: NSObject, Home {
     
     /// Removes all accessories from `toggleableAccessories`. Fetches all the primary/boolean/writable/services and sets the dictionary.
     func updateAccessories() {
+        /// TODO: There is a bug that if you quickly click an accessory when you foreground, it will flicker.
+        /// The issue is that we request a new value before the response comes back for the given accessory.
         guard let home = homeManager.primaryHome else { return }
         
         var toggleableAccessories: [UUID: ToggleableAccessory] = [:]
@@ -52,6 +60,8 @@ class PrimaryHome: NSObject, Home {
         let toggleableCharacterstics = primaryServices.flatMap { service -> [HMCharacteristic] in
             service.characteristics.filter { $0.isBool && $0.isWriteable }
         }
+        
+        toggleableCharacterstics.forEach { $0.service?.accessory?.delegate = self }
         
         // Build the ToggleableAccessory and append it to the toggleableAccessories dictionary.
         toggleableCharacterstics.forEach { characteristic in
@@ -67,13 +77,25 @@ class PrimaryHome: NSObject, Home {
         self.toggleableAccessories = toggleableAccessories
     }
     
+    private func updateNumberOfAccessoriesOn() {
+        background.async { [weak self] in
+            guard let self = self else { return }
+            
+            let numberOfAccessoriesOnNow = Array(self.toggleableAccessories.values)
+                .filter { $0.state == .on }.count
+            
+            guard numberOfAccessoriesOnNow != self.numberOfAccessoriesOn else { return }
+            self.numberOfAccessoriesOn = numberOfAccessoriesOnNow
+        }
+    }
+    
     private func sendObserverUpdatedAccessories() {
         let sortedAccessoriesArray = Array(toggleableAccessories.values.sorted { $0.name <= $1.name })
         
+        updateNumberOfAccessoriesOn()
+        
         guard !sortedAccessoriesArray.isEmpty else { return }
-        
-        ComplicationHomeProvider.shared.updateNumberOfAccessoriesOn(with: numberOfAccessoriesOn)
-        
+            
         observer?.didUpdateAccessories(sortedAccessoriesArray)
     }
     
@@ -81,8 +103,9 @@ class PrimaryHome: NSObject, Home {
 
     /// Reads the characterstics most up-to-date value, and updates the characterstic.
     private func requestUpdatedValue(for characteristic: HMCharacteristic) {
+        Log.i("Requested readValue started for \(characteristic.service?.name ?? "").")
         characteristic.readValue { [weak self] error in
-            Log.i("Requested readValue completed.")
+            Log.i("Requested readValue completed for \(characteristic.service?.name ?? "").")
             self?.charactersticValueUpdated(characteristic, error: error)
         }
     }
@@ -125,8 +148,11 @@ class PrimaryHome: NSObject, Home {
         
         toggleableAccessories[characteristic.uniqueIdentifier]?.state = !isOn ? .on : .off
         
+        characteristic.service?.accessory?.delegate = nil
         characteristic.writeValue(!isOn) { [weak self] error in
-            self?.charactersticValueUpdated(characteristic, error: error)
+            guard let self = self else { return }
+            self.charactersticValueUpdated(characteristic, error: error)
+            characteristic.service?.accessory?.delegate = self
         }
     }
     
@@ -211,5 +237,16 @@ extension HMCharacteristic {
     
     var supportsNotifications: Bool {
         properties.contains(HMCharacteristicPropertySupportsEventNotification)
+    }
+}
+
+extension PrimaryHome: HMAccessoryDelegate {
+    func accessory(
+        _ accessory: HMAccessory,
+        service: HMService,
+        didUpdateValueFor characteristic: HMCharacteristic
+    ) {
+        Log.i("Delegate for \(characteristic.service?.name ?? "") triggered.")
+        charactersticValueUpdated(characteristic, error: nil)
     }
 }

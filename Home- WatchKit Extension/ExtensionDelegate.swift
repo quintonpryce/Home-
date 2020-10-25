@@ -22,8 +22,6 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
     
     func applicationDidEnterBackground() {
         scheduleBackgroundRefreshTasks()
-        
-        ComplicationHomeProvider.shared.forceReloadComplications()
     }
 
     func handle(_ backgroundTasks: Set<WKRefreshBackgroundTask>) {
@@ -32,8 +30,16 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
             // Use a switch statement to check the task type
             switch task {
             case let backgroundTask as WKApplicationRefreshBackgroundTask:
-                // Be sure to complete the background task once you’re done.
-                backgroundTask.setTaskCompletedWithSnapshot(true)
+                ComplicationHomeProvider.shared = ComplicationHomeProvider()
+                ComplicationHomeProvider.shared.completion = {
+                    // Schedule the next background update.
+                    self.scheduleBackgroundRefreshTasks()
+                    
+                    // Mark the task as ended, and request an updated snapshot.
+                    backgroundTask.setTaskCompletedWithSnapshot(true)
+                }
+                
+//                ComplicationHomeProvider.shared.forceUpdateNumberOfAccessoriesOn()
             case let snapshotTask as WKSnapshotRefreshBackgroundTask:
                 // Snapshot tasks have a unique completion call, make sure to set your expiration date
                 snapshotTask.setTaskCompleted(restoredDefaultState: true, estimatedSnapshotExpiration: Date.distantFuture, userInfo: nil)
@@ -64,7 +70,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
         
         // If there is a complication on the watch face, the app should get at least four
         // updates an hour. So calculate a target date 15 minutes in the future.
-        let targetDate = Date().addingTimeInterval(15.0 * 60.0)
+        let targetDate = Date().addingTimeInterval(0.5 * 60.0)
         
         // Schedule the background refresh task.
         watchExtension.scheduleBackgroundRefresh(withPreferredDate: targetDate, userInfo: nil) { (error) in
