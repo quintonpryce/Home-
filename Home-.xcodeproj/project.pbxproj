@@ -10,7 +10,9 @@
 		10252B9F25144B68001D5CDD /* ToggleableAccessoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252B9E25144B68001D5CDD /* ToggleableAccessoryViewModel.swift */; };
 		10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA025144B94001D5CDD /* RowDataSource.swift */; };
 		10252BA325144BEA001D5CDD /* ToggleableAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10252BA225144BEA001D5CDD /* ToggleableAccessoryView.swift */; };
+		102728E72545FE3000A5DCA5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102728E62545FE3000A5DCA5 /* Log.swift */; };
 		10423628253E81470058A610 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10423627253E81470058A610 /* Constants.swift */; };
+		107750612543B76C00A8AFA9 /* ComplicationHomeUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107750602543B76C00A8AFA9 /* ComplicationHomeUpdater.swift */; };
 		107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107A053B25143EA0005CB391 /* ViewExtensions.swift */; };
 		10BAFA7E252A05BB0050C6B5 /* ToggleableAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */; };
 		10F7D417252A6D9800126FC7 /* BlankAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F7D416252A6D9800126FC7 /* BlankAccessoryView.swift */; };
@@ -75,7 +77,9 @@
 		10252B9E25144B68001D5CDD /* ToggleableAccessoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessoryViewModel.swift; sourceTree = "<group>"; };
 		10252BA025144B94001D5CDD /* RowDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowDataSource.swift; sourceTree = "<group>"; };
 		10252BA225144BEA001D5CDD /* ToggleableAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessoryView.swift; sourceTree = "<group>"; };
+		102728E62545FE3000A5DCA5 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		10423627253E81470058A610 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		107750602543B76C00A8AFA9 /* ComplicationHomeUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationHomeUpdater.swift; sourceTree = "<group>"; };
 		107A053B25143EA0005CB391 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		10AEABB92514369D00F607CD /* Home- WatchKit Extension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Home- WatchKit Extension.entitlements"; sourceTree = "<group>"; };
 		10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleableAccessory.swift; sourceTree = "<group>"; };
@@ -131,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				10FF3C18251190E2007C5A38 /* PrimaryHome.swift */,
+				107750602543B76C00A8AFA9 /* ComplicationHomeUpdater.swift */,
 				10BAFA7D252A05BB0050C6B5 /* ToggleableAccessory.swift */,
 			);
 			path = HomeKit;
@@ -197,6 +202,7 @@
 				10FF3BFD25118E27007C5A38 /* ExtensionDelegate.swift */,
 				10FF3BFF25118E27007C5A38 /* ComplicationController.swift */,
 				10423627253E81470058A610 /* Constants.swift */,
+				102728E62545FE3000A5DCA5 /* Log.swift */,
 				10FF3C0125118E27007C5A38 /* Assets.xcassets */,
 				10FF3C0625118E27007C5A38 /* Info.plist */,
 				10FF3C0325118E27007C5A38 /* Preview Content */,
@@ -357,8 +363,10 @@
 				10FF3BFA25118E27007C5A38 /* ContentView.swift in Sources */,
 				10252BA325144BEA001D5CDD /* ToggleableAccessoryView.swift in Sources */,
 				10252B9F25144B68001D5CDD /* ToggleableAccessoryViewModel.swift in Sources */,
+				102728E72545FE3000A5DCA5 /* Log.swift in Sources */,
 				107A053C25143EA0005CB391 /* ViewExtensions.swift in Sources */,
 				10252BA125144B94001D5CDD /* RowDataSource.swift in Sources */,
+				107750612543B76C00A8AFA9 /* ComplicationHomeUpdater.swift in Sources */,
 				10FF3BFE25118E27007C5A38 /* ExtensionDelegate.swift in Sources */,
 				10423628253E81470058A610 /* Constants.swift in Sources */,
 			);

@@ -135,10 +135,9 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
     }
     
     func createFullColorImageProvider(_ size: CGSize) -> CLKFullColorImageProvider {
-        let modifiedImage = homeImage
+        let modifiedImage = homeImageWithNumberOfDevices
                 .withRenderingMode(.alwaysOriginal)
                 .withTintColor(.primaryYellow)
-                .drawText(numberOfDevices, color: .white)
                 .resize(to: size)
             
         return CLKFullColorImageProvider(

@@ -15,4 +15,6 @@ struct ToggleableAccessory {
     var state: State
     
     var action: () -> Void
+    
+    var isLoading: Bool
 }

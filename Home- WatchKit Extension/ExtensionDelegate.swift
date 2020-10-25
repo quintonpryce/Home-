@@ -22,6 +22,8 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
     
     func applicationDidEnterBackground() {
         scheduleBackgroundRefreshTasks()
+        
+        ComplicationHomeProvider.shared.forceReloadComplications()
     }
 
     func handle(_ backgroundTasks: Set<WKRefreshBackgroundTask>) {
@@ -69,11 +71,11 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
             
             // Check for errors.
             if let error = error {
-                print("*** An background refresh error occurred: \(error.localizedDescription) ***")
+                Log.i("*** An background refresh error occurred: \(error.localizedDescription) ***")
                 return
             }
             
-            print("*** Background Task Completed Successfully! ***")
+            Log.i("*** Background Task Completed Successfully! ***")
         }
     }
 

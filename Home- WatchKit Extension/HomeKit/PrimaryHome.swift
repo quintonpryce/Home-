@@ -6,7 +6,6 @@
 //
 
 import HomeKit
-import ClockKit
 
 protocol HomeObserver: AnyObject {
     func didUpdateAccessories(_ toggleableAccessories: [ToggleableAccessory])
@@ -16,72 +15,6 @@ protocol Home: AnyObject {
     var observer: HomeObserver? { get set }
     var numberOfAccessoriesOn: Int { get }
     func updateAccessories()
-}
-
-protocol ComplicationHomeProviderDelegate: AnyObject {
-    func didUpdateNumberOfAccessoriesOn(_ numberOfAccessoriesOn: Int)
-}
-
-
-
-class ComplicationHomeProvider: NSObject, HMHomeManagerDelegate {
-    static let shared = ComplicationHomeProvider()
-    
-    private let homeManager = HMHomeManager()
-    
-    private var numberOfKickedRequests = 0
-    
-    var numberOfAccessoriesOn = 0
-    
-    override init() {
-        super.init()
-        homeManager.delegate = self
-    }
-    
-    func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
-        updateNumberOfAccessoriesOn()
-    }
-    
-    func updateNumberOfAccessoriesOn() {
-        guard numberOfKickedRequests == 0 else { return }
-        
-        numberOfAccessoriesOn = 0
-        
-        guard let primaryServices = homeManager.primaryHome?.primaryServices else { return }
-        
-        let toggleableCharacterstics = primaryServices.flatMap { service -> [HMCharacteristic] in
-            service.characteristics.filter { $0.isBool && $0.isWriteable }
-        }
-        
-        numberOfKickedRequests = toggleableCharacterstics.count
-        
-        toggleableCharacterstics.forEach { characteristic in
-            characteristic.readValue { [weak self] _ in
-                self?.didReadCharactisticValue(characteristic)
-            }
-        }
-    }
-    
-    private func didReadCharactisticValue(_ characteristic: HMCharacteristic) {
-        numberOfKickedRequests -= 1
-        
-        if let isOn = characteristic.value as? Bool, isOn {
-            numberOfAccessoriesOn += 1
-        }
-        
-        if numberOfKickedRequests <= 0 {
-            forceReloadComplications()
-        }
-    }
-    
-    private func forceReloadComplications() {
-        let server = CLKComplicationServer.sharedInstance()
-
-        for complication in server.activeComplications ?? [] {
-            server.reloadTimeline(for: complication)
-        }
-    }
-    
 }
 
 class PrimaryHome: NSObject, Home {
@@ -123,9 +56,10 @@ class PrimaryHome: NSObject, Home {
         // Build the ToggleableAccessory and append it to the toggleableAccessories dictionary.
         toggleableCharacterstics.forEach { characteristic in
             guard let toggleableAccessory = buildToggleableAccessory(characteristic) else { return }
+            requestUpdatedValue(for: characteristic)
             
             toggleableAccessories[characteristic.uniqueIdentifier] = toggleableAccessory
-            requestUpdatedValue(for: characteristic)
+            
             // need to queue up updating values. Maybe a loading screen?
         }
         
@@ -138,6 +72,8 @@ class PrimaryHome: NSObject, Home {
         
         guard !sortedAccessoriesArray.isEmpty else { return }
         
+        ComplicationHomeProvider.shared.updateNumberOfAccessoriesOn(with: numberOfAccessoriesOn)
+        
         observer?.didUpdateAccessories(sortedAccessoriesArray)
     }
     
@@ -146,6 +82,7 @@ class PrimaryHome: NSObject, Home {
     /// Reads the characterstics most up-to-date value, and updates the characterstic.
     private func requestUpdatedValue(for characteristic: HMCharacteristic) {
         characteristic.readValue { [weak self] error in
+            Log.i("Requested readValue completed.")
             self?.charactersticValueUpdated(characteristic, error: error)
         }
     }
@@ -157,10 +94,12 @@ class PrimaryHome: NSObject, Home {
         guard var toggleableAccessory = existingToggleableAccessory ?? buildToggleableAccessory(characteristic) else {
             return
         }
+        Log.i("State updated for: \(String(describing: toggleableAccessories[characteristic.uniqueIdentifier]?.name)).")
         
         toggleableAccessory.state = state
         toggleableAccessory.action = createToggleAction(for: characteristic, state: state)
         
+        toggleableAccessories[characteristic.uniqueIdentifier]?.isLoading = false
         toggleableAccessories[characteristic.uniqueIdentifier]?.state = state
         toggleableAccessories[characteristic.uniqueIdentifier]?.action = createToggleAction(for: characteristic, state: state)
         sendObserverUpdatedAccessories()
@@ -219,7 +158,8 @@ class PrimaryHome: NSObject, Home {
         let toggleableAccessory = ToggleableAccessory(
             name: name,
             state: state,
-            action: action
+            action: action,
+            isLoading: true
         )
         
         return toggleableAccessory
@@ -244,7 +184,7 @@ extension PrimaryHome: HMHomeManagerDelegate {
     }
 }
 
-private extension HMCharacteristic {
+extension HMCharacteristic {
     var toggleableState: ToggleableAccessory.State {
         guard let isOn = value as? Bool, isReachable else {
             return .unresponsive
@@ -272,8 +212,4 @@ private extension HMCharacteristic {
     var supportsNotifications: Bool {
         properties.contains(HMCharacteristicPropertySupportsEventNotification)
     }
-}
-
-private extension HMService {
-    
 }

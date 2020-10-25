@@ -22,9 +22,9 @@ class MockHome: Home {
     
     func updateAccessories() {
         observer?.didUpdateAccessories([
-            ToggleableAccessory(name: "Dining Room", state: .on, action: {  }),
-            ToggleableAccessory(name: "Living Room", state: .unresponsive, action: { }),
-            ToggleableAccessory(name: "Garage", state: .off, action: { }),
+            ToggleableAccessory(name: "Dining Room", state: .on, action: {  }, isLoading: false),
+            ToggleableAccessory(name: "Living Room", state: .unresponsive, action: { }, isLoading: false),
+            ToggleableAccessory(name: "Garage", state: .off, action: { }, isLoading: false),
         ])
     }
 }
